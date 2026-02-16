@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cumple Buzz Rodrigo 1 Año</title>
+    
+    <!-- === METADATOS PARA WHATSAPP Y REDES === -->
+    <meta property="og:title" content="🚀 MISIÓN CUMPLIDA: Gracias por venir">
+    <meta property="og:description" content="¡Misión Cumplida! Gracias por asistir. Te invitamos a ver la galería de la fiesta y la sesión de fotos del Cadete Rodrigo. 🚀📸">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://fiesteala.github.io/rodrigo-lightyear/">
+    
+    <!-- IMAGEN DE VISTA PREVIA -->
+    <meta property="og:image" content="https://raw.githubusercontent.com/fiesteala/rodrigo-lightyear/main/IMG_0611.png">
+    <meta property="og:image:secure_url" content="https://raw.githubusercontent.com/fiesteala/rodrigo-lightyear/main/IMG_0611.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    
+    <meta itemprop="name" content="Misión Cumplida: Rodrigo">
+    <meta itemprop="description" content="¡Misión Cumplida! Gracias por asistir. Te invitamos a ver la galería de la fiesta y la sesión de fotos del Cadete Rodrigo. 🚀📸">
+    <meta itemprop="image" content="https://raw.githubusercontent.com/fiesteala/rodrigo-lightyear/main/IMG_0611.png">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/fiesteala/rodrigo-lightyear/main/IMG_0611.png">
+
+    <!-- Librerías -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+
+    <style>
+        :root {
+            --buzz-green: #74c045;
+            --buzz-purple: #6b3fa0;
+            --buzz-white: #ffffff;
+            --buzz-red: #da2c38;
+            --space-dark: #0f172a;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--space-dark);
+            color: var(--buzz-white);
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+
+        .font-space { font-family: 'Orbitron', sans-serif; }
+
+        .stars {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: -1;
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+        }
+        .star {
+            position: absolute; background: white; border-radius: 50%;
+            animation: twinkle var(--duration) ease-in-out infinite; opacity: 0;
+        }
+        @keyframes twinkle {
+            0% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 0.8; transform: scale(1.2); }
+            100% { opacity: 0; transform: scale(0.5); }
+        }
+
+        .btn-buzz {
+            background: linear-gradient(to bottom, #8ede5d, #74c045);
+            border-bottom: 4px solid #4a8a2a;
+            transition: all 0.1s;
+        }
+        .btn-buzz:active { transform: translateY(2px); border-bottom: 2px solid #4a8a2a; }
+
+        .scan-line {
+            width: 100%; height: 4px; background: #74c045;
+            box-shadow: 0 0 10px #74c045; animation: scan 2s linear infinite; opacity: 0.7;
+        }
+        @keyframes scan { 0% { transform: translateY(-100vh); } 100% { transform: translateY(100vh); } }
+
+        .hidden-content { display: none; opacity: 0; transition: opacity 0.5s ease-in; }
+
+        .card-border {
+            border: 2px solid var(--buzz-green);
+            box-shadow: 0 0 15px rgba(116, 192, 69, 0.4);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .wing-pattern {
+            background-image: repeating-linear-gradient(45deg, var(--buzz-red), var(--buzz-red) 10px, var(--buzz-white) 10px, var(--buzz-white) 20px);
+        }
+
+        .masonry-grid {
+            column-count: 2; column-gap: 1rem;
+        }
+        @media (min-width: 768px) { .masonry-grid { column-count: 3; } }
+        @media (min-width: 1024px) { .masonry-grid { column-count: 4; } }
+
+        .gallery-item {
+            break-inside: avoid; margin-bottom: 1rem; border-radius: 0.75rem;
+            overflow: hidden; position: relative; transform: translateZ(0);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 3px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            background: #fff; cursor: zoom-in;
+        }
+        
+        .gallery-item:hover, .gallery-item:active {
+            transform: scale(1.05) rotate(var(--rotation)); z-index: 20;
+            border-color: var(--buzz-green); box-shadow: 0 10px 20px rgba(116, 192, 69, 0.5);
+        }
+        .gallery-item img { width: 100%; height: auto; display: block; }
+
+        .admin-modal { backdrop-filter: blur(10px); background: rgba(15, 23, 42, 0.95); }
+        
+        .tab-btn.active {
+            border-bottom: 2px solid #74c045;
+            color: #74c045;
+            background-color: rgba(116, 192, 69, 0.1);
+        }
+
+        .sortable-ghost {
+            opacity: 0.4;
+            background-color: #4b5563;
+            border: 2px dashed #74c045;
+        }
+        .admin-photo-item {
+            cursor: grab;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+        .admin-photo-item:active { cursor: grabbing; }
+        .admin-photo-item.selected {
+            border: 3px solid #ef4444;
+            transform: scale(0.95);
+            opacity: 0.9;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+        .admin-photo-item.selected::after {
+            content: '✓'; position: absolute; top: 5px; right: 5px;
+            background: #ef4444; color: white; width: 20px; height: 20px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: bold; z-index: 10;
+        }
+    </style>
+</head>
+<body class="h-screen w-full flex flex-col items-center justify-center relative">
+
+    <div id="stars-container" class="stars"></div>
+    <audio id="bg-music" loop>
+        <source src="https://github.com/fiesteala/rodrigo-lightyear/raw/refs/heads/main/Buzz.mp3">
+    </audio>
+
+    <!-- INTRO -->
+    <div id="intro-screen" class="flex flex-col items-center justify-center w-full h-full p-6 text-center z-10 transition-all duration-700">
+        <div class="animate-pulse mb-6">
+            <div class="w-24 h-24 rounded-full border-4 border-green-500 flex items-center justify-center bg-gray-800 shadow-[0_0_20px_rgba(116,192,69,0.6)]">
+                <i data-lucide="award" class="w-12 h-12 text-yellow-400"></i>
+            </div>
+        </div>
+        <h1 class="font-space text-3xl text-green-400 mb-2 tracking-widest uppercase font-bold">Misión Cumplida</h1>
+        <p class="text-blue-200 text-lg mb-8 animate-bounce">Reporte Final Disponible...</p>
+        <div class="w-full max-w-xs bg-gray-800 rounded-lg p-4 border border-green-600 relative overflow-hidden group cursor-pointer" onclick="window.openInvitation()">
+            <div class="scan-line absolute top-0 left-0"></div>
+            <p class="font-space text-xl text-white font-bold uppercase tracking-wider">VER MENSAJE</p>
+            <p class="text-xs text-green-400 mt-1">Autorización Concedida</p>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div id="main-content" class="hidden-content w-full h-full absolute top-0 left-0 overflow-y-auto z-20 pb-10">
+        <div class="w-full h-16 bg-white flex items-center justify-between px-4 shadow-lg sticky top-0 z-30">
+            <div class="flex gap-2">
+                <div class="w-4 h-4 rounded-full bg-red-500 shadow-md"></div>
+                <div class="w-4 h-4 rounded-full bg-green-500 shadow-md"></div>
+                <div class="w-4 h-4 rounded-full bg-blue-500 shadow-md"></div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="window.toggleMusic()" id="music-btn" class="w-8 h-8 rounded-full border-2 border-purple-800 flex items-center justify-center text-purple-800 bg-white active:scale-90 transition-transform">
+                    <i id="music-icon" data-lucide="volume-2" class="w-4 h-4"></i>
+                </button>
+                <div class="text-purple-800 font-bold font-space text-xs tracking-widest border-2 border-purple-800 px-2 rounded">STAR COMMAND</div>
+            </div>
+        </div>
+
+        <div class="p-5 flex flex-col items-center max-w-md mx-auto mt-4">
+            <div class="relative w-full mb-6 text-center">
+                <div class="wing-pattern h-4 w-full absolute top-1/2 -z-10 rounded"></div>
+                <div class="inline-block bg-purple-700 p-4 rounded-full border-4 border-white shadow-xl relative z-10">
+                    <i data-lucide="user-astronaut" class="w-16 h-16 text-white"></i>
+                </div>
+            </div>
+
+            <!-- TÍTULO -->
+            <div class="text-center mb-6">
+                <h2 class="font-space text-green-400 text-sm uppercase tracking-widest mb-1">REPORTE DE MISIÓN</h2>
+                <h1 class="font-space text-4xl font-black text-white italic" style="text-shadow: 3px 3px 0px #6b3fa0;">
+                    RODRIGO
+                    <span class="block text-xl text-purple-400 mt-1">¡TE DICE GRACIAS!</span>
+                </h1>
+            </div>
+
+            <div class="card-border rounded-xl p-6 w-full text-center bg-gray-900/80 mb-6 backdrop-blur-md">
+                <div class="mb-4">
+                    <i data-lucide="stars" class="w-8 h-8 text-yellow-400 mx-auto mb-2"></i>
+                    <p class="text-white text-lg font-bold font-space mb-2">Misión Exitosa</p>
+                </div>
+                <p class="text-gray-300 text-base leading-relaxed mb-4">
+                    ¡Gracias infinitas por acompañarme en mi primer viaje alrededor del sol! Tu cariño y compañía hicieron que mi primera misión fuera mágica.
+                </p>
+                <div class="w-full h-px bg-green-500/30 my-4"></div>
+                <p class="text-green-400 font-space text-sm">ESTADO: <span class="text-white">FELICIDAD MÁXIMA</span></p>
+            </div>
+
+            <div class="w-full space-y-3">
+                <button onclick="window.openGallery()" class="btn-buzz w-full py-3 sm:py-4 px-2 rounded-xl text-white font-space font-bold text-sm sm:text-lg shadow-lg flex items-center justify-center gap-2 decoration-0 active:scale-95 transition-transform whitespace-nowrap">
+                    <i data-lucide="images" class="w-5 h-5"></i> VER EVIDENCIA FOTOGRÁFICA
+                </button>
+            </div>
+            
+            <p class="mt-8 text-xs text-gray-500 text-center font-space">"NOS VEMOS EN LA PRÓXIMA MISIÓN..."</p>
+
+            <div class="w-full mt-10 mb-4 flex justify-center items-center gap-2 opacity-40 hover:opacity-100 transition-opacity">
+                <p class="text-[10px] font-space text-gray-400 tracking-widest uppercase">Fiesteala &reg;</p>
+                <button onclick="window.openAdminModal()" class="text-gray-400 hover:text-white p-1 transition-transform active:scale-90"><i data-lucide="lock" class="w-3 h-3"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GALERÍA -->
+    <div id="gallery-screen" class="hidden-content w-full h-full absolute top-0 left-0 overflow-y-auto z-40 pb-10" style="background-color: rgba(15, 23, 42, 0.98);">
+        <div class="w-full h-16 bg-gray-900/80 backdrop-blur flex items-center justify-between px-4 sticky top-0 z-50 border-b border-green-500/30">
+            <button onclick="window.closeGallery()" class="text-white p-2 rounded-full hover:bg-gray-800 transition active:scale-90">
+                <i data-lucide="arrow-left" class="w-6 h-6"></i>
+            </button>
+            <h2 class="font-space text-green-400 text-lg tracking-widest">GALERÍA</h2>
+            <div class="w-8"></div>
+        </div>
+        <div class="p-4">
+            <div id="loading-spinner" class="text-center mt-10 text-green-500">
+                <i data-lucide="loader-2" class="animate-spin w-8 h-8 mx-auto"></i>
+                <p class="text-xs mt-2">Cargando...</p>
+            </div>
+            
+            <!-- MENSAJE DE ACCESO DENEGADO -->
+            <div id="config-error-msg" class="hidden text-center mt-10 p-6 bg-red-900/80 rounded-lg border border-red-500 mx-4">
+                <i data-lucide="shield-alert" class="mx-auto w-10 h-10 text-red-400 mb-2"></i>
+                <h3 class="text-white font-bold mb-2 uppercase">Fallo de Comunicación Estelar</h3>
+                <div class="text-[10px] text-left text-gray-200 bg-black/40 p-4 rounded-md space-y-3 font-sans">
+                    <p class="font-bold text-yellow-400 uppercase">Debes arreglar esto en tu consola de Firebase:</p>
+                    <p>1. Ve a <b>Authentication</b> > pestaña <b>Sign-in method</b> > activa <b>Anonymous</b>.</p>
+                    <p>2. Ve a <b>Firestore Database</b> > pestaña <b>Reglas</b> y pon:</p>
+                    <pre class="bg-black p-2 rounded text-green-400 text-[9px]">allow read, write: if true;</pre>
+                    <p>3. Ve a <b>Storage</b> > pestaña <b>Reglas</b> y pon:</p>
+                    <pre class="bg-black p-2 rounded text-green-400 text-[9px]">allow read, write: if true;</pre>
+                </div>
+            </div>
+
+            <div id="masonry-container" class="masonry-grid"></div>
+            <div id="empty-gallery-msg" class="hidden text-center mt-10 text-gray-400">
+                <i data-lucide="image-off" class="mx-auto w-12 h-12 mb-2 opacity-50"></i>
+                <p>Sin evidencia fotográfica.</p>
+            </div>
+
+            <div class="mt-10 text-center">
+                <button onclick="window.closeGallery()" class="text-green-400 border border-green-400 px-6 py-2 rounded-full text-xs hover:bg-green-400 hover:text-black transition uppercase">Volver a la Base</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LIGHTBOX -->
+    <div id="lightbox" class="fixed inset-0 z-50 bg-black hidden flex items-center justify-center opacity-0 transition-opacity duration-300" onclick="window.closeLightbox()">
+        <button class="absolute top-4 right-4 text-white p-4 z-50"><i data-lucide="x" class="w-8 h-8"></i></button>
+        <img id="lightbox-img" src="" class="max-w-full max-h-screen object-contain p-2 transition-transform duration-300 scale-95" alt="Foto Full">
+        <a id="download-btn" href="#" target="_blank" onclick="event.stopPropagation(); window.trackDownload(window.currentPhotoId)" class="absolute bottom-8 bg-green-600 text-white px-6 py-3 rounded-full flex items-center gap-2 shadow-lg hover:bg-green-500 transition">
+            <i data-lucide="download" class="w-4 h-4"></i> Descargar Original
+        </a>
+    </div>
+
+    <!-- MODAL ADMIN -->
+    <div id="admin-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 admin-modal">
+        <div class="bg-gray-800 border-2 border-green-500 rounded-xl w-full max-w-2xl max-h-[90vh] relative shadow-2xl flex flex-col overflow-hidden">
+            <div class="p-4 border-b border-gray-700 flex justify-between items-center bg-gray-900/50">
+                <h3 class="font-space text-green-400 text-lg font-bold">PANEL DE COMANDO</h3>
+                <button onclick="window.closeAdminModal()" class="text-gray-400 hover:text-white"><i data-lucide="x"></i></button>
+            </div>
+            
+            <div id="login-section" class="p-8 text-center">
+                <input type="password" id="admin-pass" placeholder="Contraseña de Mando" class="w-full max-w-xs bg-gray-900 text-white border border-gray-600 rounded p-2 text-center font-space focus:border-green-500 outline-none mb-3">
+                <button onclick="window.checkAdmin()" class="w-full max-w-xs bg-green-600 text-white font-bold py-2 rounded hover:bg-green-500 transition mx-auto block">ACCEDER</button>
+            </div>
+
+            <div id="admin-content" class="hidden flex-1 flex flex-col overflow-hidden">
+                <!-- ESTADO DE CONEXIÓN -->
+                <div class="bg-black/40 p-2 text-[9px] flex justify-between items-center border-b border-gray-700">
+                    <span id="conn-status" class="text-yellow-400 italic">Detectando conexión...</span>
+                    <div class="flex gap-3">
+                        <span>Galería: <b id="stat-gallery-views" class="text-green-400">0</b></span>
+                        <span>Tripulación: <b id="stat-guests-count" class="text-blue-400">0</b></span>
+                    </div>
+                </div>
+
+                <div class="flex border-b border-gray-700 bg-gray-900/30 overflow-x-auto">
+                    <button onclick="window.switchTab('upload')" id="tab-upload" class="tab-btn active flex-1 py-3 px-2 text-center text-xs font-space text-gray-400 hover:text-white transition">CARGAR</button>
+                    <button onclick="window.switchTab('edit')" id="tab-edit" class="tab-btn flex-1 py-3 px-2 text-center text-xs font-space text-gray-400 hover:text-white transition">GESTIONAR</button>
+                    <button onclick="window.switchTab('guests')" id="tab-guests" class="tab-btn flex-1 py-3 px-2 text-center text-xs font-space text-gray-400 hover:text-white transition">INVITADOS</button>
+                </div>
+
+                <div class="flex-1 overflow-y-auto p-4">
+                    <div id="section-upload" class="space-y-4 text-center">
+                        <label class="block w-full p-8 border-2 border-dashed border-gray-600 rounded-lg text-center cursor-pointer hover:border-green-500 transition bg-gray-900/50">
+                            <i data-lucide="upload" class="mx-auto w-12 h-12 text-gray-400 mb-2"></i>
+                            <span class="text-sm text-gray-300 block font-bold uppercase">Subida 100% Calidad</span>
+                            <input type="file" id="file-input" accept="image/*" multiple class="hidden" onchange="window.handleFileSelect()">
+                        </label>
+                        <div id="upload-queue" class="text-[10px] text-gray-400 hidden"></div>
+                        <div id="upload-progress-container" class="hidden w-full bg-gray-700 rounded-full h-4 overflow-hidden mt-2">
+                            <div id="upload-progress" class="bg-green-500 h-full transition-all duration-300 w-0"></div>
+                        </div>
+                        <button onclick="window.uploadPhotos()" id="upload-btn" class="w-full bg-purple-600 text-white font-bold py-3 rounded hover:bg-purple-500 transition disabled:opacity-50 hidden">INICIAR SUBIDA HQ</button>
+                        <p id="upload-status" class="text-[10px] text-center text-gray-300 mt-2 min-h-[1.5rem]"></p>
+                    </div>
+
+                    <div id="section-edit" class="hidden flex flex-col">
+                        <div class="flex gap-2 mb-2">
+                            <button onclick="window.selectAll()" class="bg-blue-600 text-white text-[10px] px-2 py-1 rounded">Todo</button>
+                            <button onclick="window.clearSelection()" class="bg-gray-600 text-white text-[10px] px-2 py-1 rounded">X</button>
+                            <button onclick="window.deleteSelectedPhotos()" id="btn-delete-selected" class="bg-red-600 text-white text-[10px] px-2 py-1 rounded hidden uppercase">Borrar</button>
+                        </div>
+                        <div id="admin-gallery-list" class="grid grid-cols-4 gap-2"></div>
+                    </div>
+
+                    <div id="section-guests" class="hidden space-y-4">
+                        <div class="bg-gray-900/50 p-4 rounded-lg border border-gray-700">
+                            <input type="text" id="guest-name" placeholder="Nombre Familia" class="w-full bg-gray-800 border border-gray-600 rounded p-2 text-sm text-white mb-2">
+                            <input type="tel" id="guest-phone" placeholder="Celular" class="w-full bg-gray-800 border border-gray-600 rounded p-2 text-sm text-white mb-2">
+                            <button onclick="window.addGuest()" class="w-full bg-blue-600 text-white text-sm font-bold py-2 rounded">GUARDAR Y ENVIAR</button>
+                        </div>
+                        <div id="guests-list" class="space-y-2 mt-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIREBASE MASTER SCRIPT -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, deleteDoc, doc, updateDoc, writeBatch, increment, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyDL9UEEvWKYE7QpctYrnu1rG644x05_4Wk",
+            authDomain: "bodasofiayalejadro.firebaseapp.com",
+            projectId: "bodasofiayalejadro",
+            storageBucket: "bodasofiayalejadro.firebasestorage.app",
+            messagingSenderId: "905632324437",
+            appId: "1:905632324437:web:b7aead724b299cc3202ddc"
+        };
+
+        const appId = 'cumple-buzz-rodrigo-1-ano';
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const storage = getStorage(app);
+        
+        let photosRef, guestsRef, analyticsRef;
+        window.allPhotos = [];
+        window.selectedPhotoIds = new Set();
+        window.currentPhotoId = null;
+        window.isAdminLoggedIn = false;
+
+        // INICIALIZACIÓN DE AUTH
+        onAuthStateChanged(auth, (user) => {
+            const connStatus = document.getElementById('conn-status');
+            if (user) {
+                if(connStatus) { connStatus.innerText = "Conectado al Comando Estelar"; connStatus.className = "text-green-400 italic"; }
+                photosRef = collection(db, 'artifacts', appId, 'public', 'data', 'gallery_images');
+                guestsRef = collection(db, 'artifacts', appId, 'public', 'data', 'guest_list');
+                analyticsRef = doc(db, 'artifacts', appId, 'public', 'data', 'analytics_global', 'summary');
+                loadAllData();
+            } else {
+                if(connStatus) { connStatus.innerText = "Sincronizando identidad..."; connStatus.className = "text-yellow-400 italic"; }
+                signInAnonymously(auth).catch(handleAuthError);
+            }
+        });
+
+        function handleAuthError(e) {
+            console.error("Firebase Auth/Permission Error:", e);
+            const spinner = document.getElementById('loading-spinner');
+            const errorMsg = document.getElementById('config-error-msg');
+            const connStatus = document.getElementById('conn-status');
+            if(spinner) spinner.style.display = 'none';
+            if(errorMsg) errorMsg.classList.remove('hidden');
+            if(connStatus) { connStatus.innerText = "Error de Permisos"; connStatus.className = "text-red-400 font-bold"; }
+        }
+
+        function loadAllData() {
+            onSnapshot(photosRef, (snapshot) => {
+                let photos = [];
+                snapshot.forEach(doc => photos.push({ id: doc.id, ...doc.data() }));
+                photos.sort((a, b) => (a.order || 999) - (b.order || 999));
+                window.allPhotos = photos; 
+                renderPublicGallery(photos);
+                if (window.isAdminLoggedIn) renderAdminGallery(photos);
+            }, (err) => { if (err.code === 'permission-denied') handleAuthError(err); });
+
+            onSnapshot(guestsRef, (snapshot) => {
+                const list = document.getElementById('guests-list');
+                const countStat = document.getElementById('stat-guests-count');
+                if (countStat) countStat.innerText = snapshot.size;
+                if (!list) return;
+                let html = '';
+                snapshot.forEach(docSnap => {
+                    const g = { id: docSnap.id, ...docSnap.data() };
+                    html += `<div class="bg-gray-800 p-2 rounded flex justify-between items-center text-[10px] mb-1 border border-gray-700">
+                        <span class="truncate">${g.name}</span>
+                        <div class="flex gap-2">
+                            <button onclick="window.sendWhatsapp('${g.id}','${g.phone}','${g.name}')" class="text-green-400 p-1"><i data-lucide="send" class="w-3 h-3"></i></button>
+                            <button onclick="window.deleteGuest('${g.id}')" class="text-red-400 p-1"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                        </div>
+                    </div>`;
+                });
+                list.innerHTML = html || '<p class="text-gray-500 text-center text-[10px]">Sin invitados registrados.</p>';
+                lucide.createIcons();
+            }, (err) => { if (err.code === 'permission-denied') handleAuthError(err); });
+
+            onSnapshot(analyticsRef, (docSnap) => {
+                const viewEl = document.getElementById('stat-gallery-views');
+                if (viewEl && docSnap.exists()) viewEl.innerText = docSnap.data().gallery_views || 0;
+            });
+        }
+
+        // --- FUNCIONES GLOBALES ---
+        window.openInvitation = () => {
+            const intro = document.getElementById('intro-screen');
+            const main = document.getElementById('main-content');
+            if(intro) intro.style.display = 'none';
+            if(main) { main.style.display = 'block'; setTimeout(() => main.style.opacity = '1', 50); }
+            window.launchConfetti();
+            const bgMusic = document.getElementById('bg-music');
+            if(bgMusic) bgMusic.play().catch(()=>{});
+        };
+
+        window.launchConfetti = () => {
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#74c045', '#6b3fa0', '#ffffff'] });
+        };
+
+        window.toggleMusic = () => {
+            const audio = document.getElementById('bg-music');
+            const icon = document.getElementById('music-icon');
+            if (!audio || !icon) return;
+            if (audio.paused) { audio.play(); icon.setAttribute('data-lucide', 'volume-2'); }
+            else { audio.pause(); icon.setAttribute('data-lucide', 'volume-x'); }
+            lucide.createIcons();
+        };
+
+        window.openGallery = () => {
+            if (analyticsRef) setDoc(analyticsRef, { gallery_views: increment(1) }, { merge: true });
+            const main = document.getElementById('main-content');
+            const gal = document.getElementById('gallery-screen');
+            if(main) main.style.display = 'none';
+            if(gal) { gal.style.display = 'block'; setTimeout(() => gal.style.opacity = '1', 50); }
+        };
+
+        window.closeGallery = () => {
+            const gal = document.getElementById('gallery-screen');
+            const main = document.getElementById('main-content');
+            if(gal) gal.style.opacity = '0';
+            setTimeout(() => { if(gal) gal.style.display = 'none'; if(main) main.style.display = 'block'; }, 300);
+        };
+
+        window.openLightbox = (url, id) => {
+            window.currentPhotoId = id;
+            if(id) updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'gallery_images', id), { views: increment(1) });
+            const img = document.getElementById('lightbox-img');
+            const btn = document.getElementById('download-btn');
+            const lb = document.getElementById('lightbox');
+            if(img) img.src = url;
+            if(btn) btn.href = url;
+            if(lb) { lb.classList.remove('hidden'); setTimeout(() => lb.classList.remove('opacity-0'), 10); }
+        };
+
+        window.closeLightbox = () => {
+            const lb = document.getElementById('lightbox');
+            if(lb) lb.classList.add('opacity-0');
+            setTimeout(() => { if(lb) lb.classList.add('hidden'); }, 300);
+        };
+
+        window.trackDownload = (id) => { if(id) updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'gallery_images', id), { downloads: increment(1) }); };
+
+        window.uploadPhotos = async () => {
+            const fileInput = document.getElementById('file-input');
+            const files = fileInput ? fileInput.files : [];
+            if (files.length === 0) return;
+            
+            const btn = document.getElementById('upload-btn');
+            const prog = document.getElementById('upload-progress');
+            const status = document.getElementById('upload-status');
+            const container = document.getElementById('upload-progress-container');
+            
+            if(btn) btn.disabled = true;
+            if(container) container.classList.remove('hidden');
+            
+            let count = 0;
+            for (let file of files) {
+                try {
+                    if(status) status.innerText = `Subiendo HQ ${count + 1} de ${files.length}...`;
+                    const sRef = ref(storage, `gallery/${Date.now()}_${file.name}`);
+                    await uploadBytes(sRef, file);
+                    const url = await getDownloadURL(sRef);
+                    await addDoc(photosRef, { url, order: window.allPhotos.length + count + 1, views: 0, downloads: 0, timestamp: serverTimestamp() });
+                    count++;
+                    if (prog) prog.style.width = `${(count / files.length) * 100}%`;
+                } catch (e) { 
+                    console.error("Fallo de subida:", e);
+                    if(status) status.innerText = `Error: ${e.code || 'Fallo de permisos'}`;
+                    if(btn) btn.disabled = false;
+                    return; 
+                }
+            }
+            if (status) status.innerText = "¡Misión Cumplida!";
+            setTimeout(() => { 
+                if(btn) btn.disabled = false; 
+                if(container) container.classList.add('hidden'); 
+                if (status) status.innerText = ""; 
+                if(fileInput) fileInput.value = ""; 
+                if(prog) prog.style.width = '0%';
+            }, 2000);
+        };
+
+        window.checkAdmin = () => {
+            const pass = document.getElementById('admin-pass');
+            if(pass && pass.value.trim() === 'BUZZ') {
+                window.isAdminLoggedIn = true;
+                const login = document.getElementById('login-section');
+                const content = document.getElementById('admin-content');
+                if(login) login.classList.add('hidden');
+                if(content) content.classList.remove('hidden');
+                renderAdminGallery(window.allPhotos);
+            } else alert("Error de Mando");
+        };
+
+        window.openAdminModal = () => {
+            const modal = document.getElementById('admin-modal');
+            const pass = document.getElementById('admin-pass');
+            if(modal) modal.classList.remove('hidden');
+            if(pass) pass.focus();
+        };
+        window.closeAdminModal = () => {
+            const modal = document.getElementById('admin-modal');
+            if(modal) modal.classList.add('hidden');
+        };
+        window.switchTab = (tab) => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            const tabBtn = document.getElementById(`tab-${tab}`);
+            if(tabBtn) tabBtn.classList.add('active');
+            ['upload', 'edit', 'guests'].forEach(s => {
+                const el = document.getElementById(`section-${s}`);
+                if(el) el.classList.add('hidden');
+            });
+            const target = document.getElementById(`section-${tab}`);
+            if(target) target.classList.remove('hidden');
+        };
+
+        window.addGuest = async () => {
+            const nEl = document.getElementById('guest-name');
+            const pEl = document.getElementById('guest-phone');
+            if(!nEl || !pEl) return;
+            const n = nEl.value.trim();
+            const p = pEl.value.replace(/\D/g,'');
+            if(!n || !p) return alert("Completa los datos");
+
+            const docRef = doc(collection(db, 'artifacts', appId, 'public', 'data', 'guest_list'));
+            const newId = docRef.id;
+            
+            setDoc(docRef, { name:n, phone:p, sentCount:1, timestamp: serverTimestamp() }).catch(e => console.error(e));
+            window.sendWhatsapp(newId, p, n);
+            
+            nEl.value = ''; pEl.value = '';
+        };
+
+        window.sendWhatsapp = (id, phone, name) => {
+            const msg = `¡Hola ${name}! 🚀 Rodrigo te invita a ver su galería de fotos aquí: ${window.location.href}`;
+            if(id) updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'guest_list', id), { sentCount: increment(1) }).catch(()=>{});
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+        };
+
+        window.deleteGuest = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'guest_list', id)); };
+
+        function renderPublicGallery(photos) {
+            const container = document.getElementById('masonry-container');
+            const empty = document.getElementById('empty-gallery-msg');
+            const spinner = document.getElementById('loading-spinner');
+            const configError = document.getElementById('config-error-msg');
+            if (!container) return;
+            if (photos.length === 0) { 
+                if(empty && configError && configError.classList.contains('hidden')) empty.classList.remove('hidden'); 
+                container.innerHTML = ''; 
+                return; 
+            }
+            if(empty) empty.classList.add('hidden');
+            if(spinner) spinner.style.display = 'none';
+            container.innerHTML = photos.map(p => `
+                <div class="gallery-item animate-[fadeIn_0.3s_ease-out]" style="--rotation: ${(Math.random()*4-2)}deg" onclick="window.openLightbox('${p.url}', '${p.id}')">
+                    <img src="${p.url}" loading="lazy">
+                </div>`).join('');
+        }
+
+        function renderAdminGallery(photos) {
+            const container = document.getElementById('admin-gallery-list');
+            if(!container) return;
+            container.innerHTML = photos.map(p => `
+                <div class="admin-photo-item bg-gray-900 rounded border border-gray-700 relative overflow-hidden ${window.selectedPhotoIds.has(p.id)?'selected':''}" onclick="window.togglePhotoSelection('${p.id}', this)">
+                    <img src="${p.url}" class="h-16 w-full object-cover">
+                    <div class="absolute bottom-0 bg-black/50 w-full text-[7px] p-0.5 flex justify-between">
+                        <span>👁${p.views||0}</span><span>⬇${p.downloads||0}</span>
+                    </div>
+                </div>`).join('');
+        }
+
+        window.togglePhotoSelection = (id, el) => {
+            if(window.selectedPhotoIds.has(id)) { window.selectedPhotoIds.delete(id); el.classList.remove('selected'); }
+            else { window.selectedPhotoIds.add(id); el.classList.add('selected'); }
+            
+            const countEl = document.getElementById('selected-count');
+            const btnDelete = document.getElementById('btn-delete-selected');
+            if(countEl) countEl.innerText = window.selectedPhotoIds.size;
+            if(btnDelete) btnDelete.classList.toggle('hidden', window.selectedPhotoIds.size === 0);
+        };
+
+        window.selectAll = () => {
+            const container = document.getElementById('admin-gallery-list');
+            if(!container) return;
+            const items = container.querySelectorAll('.admin-photo-item');
+            items.forEach(el => { if(!el.classList.contains('selected')) el.click(); });
+        };
+
+        window.clearSelection = () => {
+            window.selectedPhotoIds.clear();
+            const items = document.querySelectorAll('.admin-photo-item');
+            items.forEach(el => el.classList.remove('selected'));
+            const countEl = document.getElementById('selected-count');
+            if(countEl) countEl.innerText = "0";
+            const btnDelete = document.getElementById('btn-delete-selected');
+            if(btnDelete) btnDelete.classList.add('hidden');
+        };
+
+        window.deleteSelectedPhotos = async () => {
+            if(!confirm("¿Borrar seleccionadas?")) return;
+            const batch = writeBatch(db);
+            window.selectedPhotoIds.forEach(id => batch.delete(doc(db, 'artifacts', appId, 'public', 'data', 'gallery_images', id)));
+            await batch.commit();
+            window.clearSelection();
+        };
+
+        window.handleFileSelect = () => {
+            const input = document.getElementById('file-input');
+            const files = input ? input.files : [];
+            const queueDiv = document.getElementById('upload-queue');
+            const btn = document.getElementById('upload-btn');
+            if(files.length > 0) {
+                if(btn) btn.classList.remove('hidden');
+                if(queueDiv) {
+                    queueDiv.classList.remove('hidden');
+                    queueDiv.innerHTML = `<p class="truncate">• Seleccionadas: ${files.length} fotos originales.</p>`;
+                }
+            }
+        };
+
+        const sc = document.getElementById('stars-container');
+        if(sc) {
+            for (let i = 0; i < 50; i++) {
+                const s = document.createElement('div');
+                s.className = 'star';
+                s.style.left = Math.random()*100+'%'; s.style.top = Math.random()*100+'%';
+                s.style.width = (Math.random()*2+1)+'px'; s.style.height = s.style.width;
+                s.style.setProperty('--duration', (Math.random()*1+0.5)+'s');
+                sc.appendChild(s);
+            }
+        }
+        lucide.createIcons();
+    </script>
+</body>
+</html>
