@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>¡Misión Cumplida! - Rodrigo</title>
+    
+    <!-- === METADATA === -->
+    <meta property="og:title" content="🚀 MISIÓN CUMPLIDA: Gracias por venir">
+    <meta property="og:description" content="Gracias por acompañar al Cadete Rodrigo en su primera vuelta al sol. ¡Mira las fotos de la misión! 🛸">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://github.com/fiesteala/rodrigo-lightyear/blob/main/IMG_0611.png?raw=true">
+
+    <!-- LIBRERÍAS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* === ESTILOS ORIGINALES === */
+        :root {
+            --buzz-green: #74c045;
+            --buzz-purple: #6b3fa0;
+            --buzz-white: #ffffff;
+            --buzz-red: #da2c38;
+            --space-dark: #0f172a;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--space-dark);
+            color: var(--buzz-white);
+            overflow-x: hidden;
+        }
+
+        .font-space {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Fondo de Estrellas */
+        .stars {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: -1;
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+        }
+        
+        .star {
+            position: absolute; background: white; border-radius: 50%;
+            animation: twinkle var(--duration) ease-in-out infinite; opacity: 0;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 0.8; transform: scale(1.2); }
+            100% { opacity: 0; transform: scale(0.5); }
+        }
+
+        /* Intro Scanline */
+        .scan-line {
+            width: 100%; height: 4px; background: #74c045;
+            box-shadow: 0 0 10px #74c045;
+            animation: scan 2s linear infinite; opacity: 0.7;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(-100vh); } 100% { transform: translateY(100vh); }
+        }
+
+        .hidden-content {
+            display: none; opacity: 0; transition: opacity 0.5s ease-in;
+        }
+
+        /* Tarjetas Estilo Buzz */
+        .card-border {
+            border: 2px solid var(--buzz-green);
+            box-shadow: 0 0 15px rgba(116, 192, 69, 0.4);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .wing-pattern {
+            background-image: repeating-linear-gradient(
+                45deg, var(--buzz-red), var(--buzz-red) 10px,
+                var(--buzz-white) 10px, var(--buzz-white) 20px
+            );
+        }
+
+        .holo-border {
+            position: relative;
+            background: linear-gradient(135deg, #74c045, #6b3fa0);
+            padding: 4px;
+            border-radius: 1rem;
+            box-shadow: 0 0 25px rgba(116, 192, 69, 0.5);
+        }
+        
+        .photo-inner {
+            background-color: white; border-radius: 0.8rem; overflow: hidden; position: relative;
+        }
+
+        /* === MEJORAS RESPONSIVAS Y MASONRY === */
+        .gallery-masonry {
+            column-count: 2; /* 2 columnas en móvil */
+            column-gap: 0.75rem;
+            width: 100%;
+        }
+        @media (min-width: 640px) { 
+            .gallery-masonry { 
+                column-count: 2; 
+                column-gap: 1.5rem; 
+            } 
+        }
+        @media (min-width: 1024px) { .gallery-masonry { column-count: 3; } }
+        @media (min-width: 1280px) { .gallery-masonry { column-count: 4; } }
+
+        .gallery-item {
+            break-inside: avoid;
+            margin-bottom: 0.75rem;
+            position: relative;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            background: #1e293b;
+            cursor: pointer;
+            width: 100%;
+            display: inline-block;
+        }
+
+        @media (min-width: 640px) {
+            .gallery-item {
+                margin-bottom: 1.5rem;
+            }
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.02); z-index: 10;
+            box-shadow: 0 10px 20px rgba(116, 192, 69, 0.3);
+        }
+
+        .gallery-img {
+            width: 100%; height: auto; display: block;
+            border-radius: 0.5rem; background-color: #0f172a;
+        }
+
+        /* Lightbox */
+        #lightbox {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.98); z-index: 100;
+            justify-content: center; align-items: center; flex-direction: column;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        #lightbox.active { display: flex; opacity: 1; }
+        
+        .lightbox-content-wrapper {
+            position: relative;
+            max-width: 100%;
+            max-height: 70vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #lightbox-img {
+            max-width: 95%; 
+            max-height: 70vh; 
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(116, 192, 69, 0.5); 
+            object-fit: contain;
+        }
+
+        /* === ADAPTACIÓN ESCRITORIO === */
+        @media (min-width: 1024px) {
+            .desktop-grid {
+                display: grid;
+                grid-template-columns: 45% 50%;
+                gap: 5%;
+                align-items: center;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            .desktop-sticky {
+                position: sticky; top: 6rem;
+            }
+            .main-photo-container {
+                transform: rotate(-3deg) scale(1.1); transition: transform 0.5s;
+            }
+            .main-photo-container:hover {
+                transform: rotate(0) scale(1.15);
+            }
+        }
+
+        /* === ADMIN PANEL STYLES === */
+        .admin-glass {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--buzz-green);
+        }
+        
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #1e293b; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: var(--buzz-green); border-radius: 3px; }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        .shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+    </style>
+</head>
+<body class="min-h-screen w-full flex flex-col relative">
+
+    <div id="stars-container" class="stars"></div>
+
+    <audio id="bg-music" loop>
+        <source src="https://github.com/fiesteala/rodrigo-lightyear/raw/refs/heads/main/Buzz.mp3">
+    </audio>
+
+    <!-- PANTALLA 1: INTRO -->
+    <div id="intro-screen" class="fixed inset-0 flex flex-col items-center justify-center p-6 text-center z-50 transition-all duration-700 bg-gray-900">
+        <div class="animate-pulse mb-6">
+            <div class="w-24 h-24 rounded-full border-4 border-purple-500 flex items-center justify-center bg-gray-800 shadow-[0_0_20px_rgba(107,63,160,0.6)]">
+                <i data-lucide="check-circle-2" class="w-12 h-12 text-purple-400"></i>
+            </div>
+        </div>
+        <h1 class="font-space text-3xl text-green-400 mb-2 tracking-widest uppercase font-bold">FIN DE LA MISIÓN</h1>
+        <p class="text-blue-200 text-lg mb-8 animate-bounce">Reporte Entrante...</p>
+        <div class="w-full max-w-xs bg-gray-800 rounded-lg p-4 border border-green-600 relative overflow-hidden group cursor-pointer" onclick="openReport()">
+            <div class="scan-line absolute top-0 left-0"></div>
+            <p class="font-space text-xl text-white font-bold uppercase tracking-wider">VER MENSAJE</p>
+            <p class="text-xs text-green-400 mt-1">Acceso Autorizado</p>
+        </div>
+    </div>
+
+    <!-- PANTALLA 2: CONTENIDO PRINCIPAL -->
+    <div id="main-content" class="hidden-content w-full h-full absolute top-0 left-0 overflow-y-auto z-20 pb-20">
+        
+        <!-- Cabecera Sticky -->
+        <div class="w-full h-16 bg-white flex items-center justify-between px-6 shadow-lg sticky top-0 z-30 mb-8">
+            <div class="flex gap-2">
+                <div class="w-4 h-4 rounded-full bg-red-500 shadow-md"></div>
+                <div class="w-4 h-4 rounded-full bg-green-500 shadow-md"></div>
+                <div class="w-4 h-4 rounded-full bg-blue-500 shadow-md"></div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="toggleMusic()" id="music-btn" class="w-8 h-8 rounded-full border-2 border-purple-800 flex items-center justify-center text-purple-800 bg-white active:scale-90 transition-transform">
+                    <i id="music-icon" data-lucide="volume-2" class="w-4 h-4"></i>
+                </button>
+                <button onclick="window.showLogin()" class="text-purple-800 font-bold font-space text-xs tracking-widest border-2 border-purple-800 px-2 py-1 rounded cursor-pointer hover:bg-purple-100 transition-colors select-none">
+                    MISSION LOG
+                </button>
+            </div>
+        </div>
+
+        <div class="px-5 w-full max-w-[1400px] mx-auto">
+            
+            <!-- GRID RESPONSIVO (MENSAJE PRINCIPAL) -->
+            <div class="desktop-grid mb-12">
+                
+                <!-- COLUMNA IZQ: FOTO PRINCIPAL -->
+                <div class="relative w-full text-center px-2 mb-8 lg:mb-0 main-photo-container">
+                    <div class="wing-pattern h-24 w-[110%] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 rounded-lg opacity-80 rotate-3"></div>
+                    <div class="holo-border rotate-[-2deg] transition-transform duration-500 hover:rotate-0 hover:scale-105 shadow-2xl">
+                        <div class="photo-inner bg-gray-900">
+                             <img src="https://github.com/fiesteala/rodrigo-lightyear/blob/main/IMG_0611.png?raw=true" 
+                                  alt="Rodrigo Lightyear" 
+                                  class="w-full h-auto object-cover block">
+                             <div class="absolute inset-0 bg-gradient-to-tr from-purple-500/20 to-transparent pointer-events-none"></div>
+                        </div>
+                        <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-20 h-6 bg-gray-300 rounded shadow-md border-b-4 border-gray-400 z-20 flex items-center justify-center">
+                            <div class="w-12 h-1 bg-black/20 rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COLUMNA DER: TEXTOS Y ESTADÍSTICAS -->
+                <div class="desktop-sticky">
+                    <div class="text-center lg:text-left mb-6">
+                        <h2 class="font-space text-green-400 text-sm uppercase tracking-widest mb-1">Estatus: Completado</h2>
+                        <h1 class="font-space text-5xl lg:text-7xl font-black text-white italic" style="text-shadow: 3px 3px 0px #6b3fa0;">
+                            ¡GRACIAS!
+                        </h1>
+                        <p class="text-purple-300 font-space text-sm lg:text-lg tracking-wider mt-1">POR VENIR A MI FIESTA</p>
+                    </div>
+
+                    <div class="card-border rounded-xl p-6 w-full text-center lg:text-left bg-gray-900/90 backdrop-blur-md relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-12 h-12 border-t-2 border-r-2 border-green-500 rounded-tr-xl"></div>
+                        <div class="absolute bottom-0 left-0 w-12 h-12 border-b-2 border-l-2 border-green-500 rounded-bl-xl"></div>
+
+                        <p class="text-white text-lg lg:text-xl mb-6 leading-relaxed font-light">
+                            <span class="text-3xl text-green-400 block mb-2 lg:inline lg:mr-2">❝</span>
+                            Cadete, gracias por acompañarme en mi primera aventura intergaláctica. Tu presencia hizo que esta misión fuera inolvidable.
+                            <br><br>
+                            <span class="font-bold text-purple-400 font-space">¡Al infinito y más allá!</span>
+                        </p>
+                        
+                        <div class="grid grid-cols-2 gap-3 mt-4 border-t border-gray-700 pt-4">
+                            <div class="bg-gray-800 p-2 rounded border border-purple-500/30 text-center">
+                                <p class="text-[10px] text-gray-400 font-space uppercase">DIVERSIÓN</p>
+                                <p class="text-green-400 font-bold text-xl">100%</p>
+                            </div>
+                            <div class="bg-gray-800 p-2 rounded border border-purple-500/30 text-center">
+                                <p class="text-[10px] text-gray-400 font-space uppercase">RECUERDOS</p>
+                                <p class="text-purple-400 font-bold text-xl">∞</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === NUEVA SECCIÓN: SESIÓN DE FOTOS === -->
+            <div id="session-section" class="w-full mt-12 mb-8 border-t border-gray-800 pt-10 relative">
+                <div class="flex items-center justify-center gap-2 mb-8">
+                    <div class="h-[1px] bg-purple-500 w-10 lg:w-24"></div>
+                    <h2 class="font-space text-lg lg:text-2xl text-purple-400 uppercase tracking-widest select-none text-center">
+                        <i data-lucide="rocket" class="inline mr-2 mb-1"></i>Sesión Espacial
+                    </h2>
+                    <div class="h-[1px] bg-purple-500 w-10 lg:w-24"></div>
+                </div>
+
+                <!-- CONTENEDOR DE SUBIDA (OCULTO POR DEFECTO) -->
+                <div id="upload-container" class="hidden flex-col items-center justify-center mb-8 animate-fade-in transition-all">
+                     <div class="bg-slate-800/80 p-6 rounded-xl border border-purple-500/40 text-center w-full max-w-md mx-auto">
+                        <label class="group relative inline-flex items-center justify-center gap-3 px-8 py-3 font-space font-bold text-white transition-all duration-300 bg-purple-600 rounded-full cursor-pointer hover:bg-purple-500 hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] active:scale-95">
+                            <i data-lucide="upload-cloud" class="w-5 h-5 group-hover:-translate-y-1 transition-transform"></i>
+                            <span>SUBIR FOTOS DE SESIÓN</span>
+                            <input type="file" id="file-upload" class="hidden" accept="image/*" multiple onchange="window.handleUpload(this.files)">
+                        </label>
+                        <p class="text-xs text-gray-400 mt-3 font-space">Soporta múltiples archivos (Jpg, Png). Máx 10MB auto-optimizado.</p>
+                        
+                        <!-- Barra de progreso -->
+                        <div id="upload-status-container" class="hidden mt-4 w-full">
+                            <div class="w-full bg-gray-700 rounded-full h-2.5 mb-1 overflow-hidden">
+                                <div id="upload-progress-bar" class="bg-green-500 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                            </div>
+                            <p id="upload-status-text" class="text-xs text-green-400 font-mono">Iniciando...</p>
+                        </div>
+                     </div>
+                </div>
+
+                <!-- GRID SESIÓN -->
+                <div id="session-grid" class="gallery-masonry w-full min-h-[150px]">
+                    <!-- Cargando... -->
+                    <div class="text-center text-gray-500 w-full py-10 italic animate-pulse col-span-full">
+                        <i data-lucide="loader-2" class="w-8 h-8 mx-auto mb-2 opacity-50 animate-spin"></i>
+                        Descargando archivos de sesión...
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN: GALERÍA DE LA FIESTA (EXISTENTE) -->
+            <div id="gallery-section" class="w-full mt-12 mb-12">
+                <div class="flex items-center justify-center gap-2 mb-8">
+                    <div class="h-[1px] bg-green-500 w-10 lg:w-24"></div>
+                    <h2 id="gallery-title" class="font-space text-lg lg:text-2xl text-green-400 uppercase tracking-widest select-none text-center">
+                        <i data-lucide="camera" class="inline mr-2 mb-1"></i>Galería de la Misión
+                    </h2>
+                    <div class="h-[1px] bg-green-500 w-10 lg:w-24"></div>
+                </div>
+
+                <!-- GRID FIESTA -->
+                <div id="gallery-grid" class="gallery-masonry w-full min-h-[300px]">
+                    <div class="text-center text-gray-500 w-full py-20 italic animate-pulse col-span-full">
+                        <i data-lucide="satellite" class="w-12 h-12 mx-auto mb-2 opacity-50"></i>
+                        Estableciendo enlace con la base de datos...
+                    </div>
+                </div>
+                
+                <div id="error-container" class="w-full max-w-md mx-auto mt-4"></div>
+            </div>
+
+            <!-- Pie de página -->
+            <div class="w-full mt-20 mb-8 flex flex-col items-center opacity-60">
+                <div class="flex gap-2 mb-2">
+                    <i data-lucide="star" class="w-4 h-4 text-yellow-500 fill-yellow-500"></i>
+                    <i data-lucide="star" class="w-4 h-4 text-yellow-500 fill-yellow-500"></i>
+                    <i data-lucide="star" class="w-4 h-4 text-yellow-500 fill-yellow-500"></i>
+                </div>
+                <p class="text-xs font-space text-gray-400 tracking-widest uppercase">
+                    Rodrigo - 1 Año &copy; 2026
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- LIGHTBOX -->
+    <div id="lightbox" class="p-4" onclick="if(event.target === this) window.closeLightbox()">
+        <button class="absolute top-4 right-4 text-white hover:text-red-500 z-50 p-2 bg-black/50 rounded-full transition" onclick="window.closeLightbox()">
+            <i data-lucide="x" class="w-8 h-8"></i>
+        </button>
+        
+        <div class="lightbox-content-wrapper">
+            <img id="lightbox-img" src="" alt="Vista previa">
+        </div>
+        
+        <div class="flex flex-col items-center gap-2 mt-6 z-50 w-full">
+            <p class="text-green-400/80 text-xs font-space tracking-widest mt-2 animate-pulse text-center bg-black/50 px-4 py-2 rounded-full border border-green-500/30">
+                <i data-lucide="hand" class="inline w-3 h-3 mr-1"></i> MANTÉN PRESIONADO LA FOTO PARA GUARDAR
+            </p>
+        </div>
+    </div>
+
+    <!-- === LOGIN & PANEL === -->
+    <div id="login-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
+        <div class="bg-slate-900 border-2 border-green-500 p-6 rounded-lg shadow-[0_0_30px_rgba(116,192,69,0.3)] max-w-sm w-full text-center relative">
+            <button onclick="window.closeLogin()" class="absolute top-2 right-2 text-gray-500 hover:text-white transition-colors">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <div class="mb-6 inline-block p-4 rounded-full bg-slate-800 border border-green-500/30">
+                <i data-lucide="shield-check" class="w-10 h-10 text-green-400"></i>
+            </div>
+            <h3 class="font-space text-white text-lg mb-2 font-bold tracking-wider">ACCESO DE MANDO</h3>
+            <p class="text-gray-400 text-xs mb-6 font-space">INGRESE CÓDIGO DE AUTORIZACIÓN</p>
+            <input type="password" id="admin-pass" placeholder="CÓDIGO" class="w-full bg-slate-800 border border-green-700 text-white px-4 py-3 rounded mb-4 font-mono text-center focus:outline-none focus:border-green-400 tracking-widest text-lg uppercase transition-colors">
+            <button onclick="window.checkLogin()" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded font-space transition-all active:scale-95 shadow-lg">AUTORIZAR INGRESO</button>
+            <div id="login-error" class="mt-4 text-red-400 text-xs font-bold font-space hidden">
+                <i data-lucide="alert-circle" class="inline w-3 h-3 mr-1 mb-0.5"></i> CÓDIGO INCORRECTO
+            </div>
+        </div>
+    </div>
+
+    <div id="admin-panel" class="hidden fixed inset-0 z-[100] admin-glass flex flex-col overflow-hidden">
+        <div class="w-full h-14 border-b border-green-500/50 flex items-center justify-between px-6 bg-slate-900">
+            <div class="flex items-center gap-2 text-green-400">
+                <i data-lucide="command" class="w-5 h-5"></i>
+                <span class="font-space font-bold tracking-widest text-sm">COMANDO ESTELAR</span>
+            </div>
+            <button onclick="window.closeAdminPanel()" class="text-red-400 hover:text-red-200 transition-colors">
+                <i data-lucide="x-circle" class="w-6 h-6"></i>
+            </button>
+        </div>
+        <div class="flex-1 overflow-auto p-4 lg:p-8">
+            <div class="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
+                <div class="flex flex-col gap-6">
+                    <div class="bg-slate-800/50 p-6 rounded-lg border border-purple-500/30">
+                        <h3 class="text-purple-300 font-space text-sm mb-4 border-b border-purple-500/20 pb-2">DATOS DEL CADETE RECEPTOR</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs text-gray-400 font-space mb-1">NOMBRE DEL INVITADO</label>
+                                <input type="text" id="guestName" oninput="window.updatePreview()" placeholder="Ej. Tío Buzz" class="w-full bg-slate-900 border border-green-700 text-white px-4 py-2 rounded focus:outline-none focus:border-green-400 font-space text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-400 font-space mb-1">WHATSAPP (Con código país)</label>
+                                <input type="tel" id="guestPhone" placeholder="Ej. 5211234567890" class="w-full bg-slate-900 border border-green-700 text-white px-4 py-2 rounded focus:outline-none focus:border-green-400 font-space text-sm">
+                            </div>
+                        </div>
+                        <button onclick="window.sendWhatsapp()" class="w-full mt-6 bg-green-600 hover:bg-green-500 text-white font-space font-bold py-3 rounded flex items-center justify-center gap-2 transition-all active:scale-95 shadow-[0_0_15px_rgba(116,192,69,0.4)]">
+                            <i data-lucide="send" class="w-4 h-4"></i> CONFIRMAR Y ENVIAR
+                        </button>
+                    </div>
+                    <div class="bg-[#e5ddd5] p-4 rounded-lg shadow-lg relative border-l-4 border-green-500">
+                        <div class="absolute -top-3 right-4 bg-green-500 text-white text-[10px] px-2 py-1 rounded font-bold font-space">VISTA PREVIA</div>
+                        <div class="bg-white rounded-lg p-2 shadow-sm max-w-sm ml-auto mr-auto lg:mr-auto lg:ml-0 relative">
+                            <div class="absolute top-0 -left-2 w-0 h-0 border-[10px] border-transparent border-t-white"></div>
+                            <div class="w-full h-40 bg-gray-200 rounded mb-2 overflow-hidden flex items-center justify-center relative">
+                                <img src="https://github.com/fiesteala/rodrigo-lightyear/blob/main/IMG_0611.png?raw=true" class="w-full h-full object-cover">
+                                <div class="absolute bottom-1 right-1 bg-black/50 text-white text-[10px] px-1 rounded">GIF</div>
+                            </div>
+                            <p class="text-black text-sm leading-snug font-sans" id="previewText">Hola [Nombre], gracias por venir a la fiesta...</p>
+                            <div class="text-[10px] text-gray-400 text-right mt-1">12:00 PM <i data-lucide="check-check" class="inline w-3 h-3 text-blue-400"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-slate-800/50 rounded-lg border border-gray-600 flex flex-col h-full overflow-hidden">
+                    <div class="p-4 bg-slate-900 border-b border-gray-600">
+                        <h3 class="text-gray-300 font-space text-sm"><i data-lucide="list" class="inline w-4 h-4 mr-2"></i>BITÁCORA DE ENVÍOS</h3>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-4 custom-scroll"><ul id="guestList" class="space-y-2"></ul></div>
+                    <div class="p-3 bg-slate-900 text-center text-xs text-gray-500 font-space border-t border-gray-600">DATOS ALMACENADOS LOCALMENTE</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODULO FIREBASE ACTUALIZADO CON UPLOAD, COMPRESIÓN Y DELETE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, query, orderBy, onSnapshot, addDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // CONFIGURACIÓN CLOUDINARY
+        const CLOUD_NAME = "duy0mcqsh"; 
+        const UPLOAD_PRESET = "jbbd0sxy";  
+
+        // CONFIG FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyDL9UEEvWKYE7QpctYrnu1rG644x05_4Wk",
+            authDomain: "bodasofiayalejadro.firebaseapp.com",
+            projectId: "bodasofiayalejadro",
+            storageBucket: "bodasofiayalejadro.firebasestorage.app",
+            messagingSenderId: "905632324437",
+            appId: "1:905632324437:web:b7aead724b299cc3202ddc"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        
+        const PARTY_COLLECTION = "rodrigo_cumple_1";
+        const SESSION_COLLECTION = "rodrigo_sesion"; 
+
+        window.isAdmin = false;
+        
+        signInAnonymously(auth).then(() => {
+            initGallery(PARTY_COLLECTION, "gallery-grid", "NO HAY FOTOS DE LA FIESTA AÚN.");
+            initGallery(SESSION_COLLECTION, "session-grid", "NO HAY FOTOS DE SESIÓN AÚN.");
+        }).catch((e) => console.error(e));
+
+        function getThumbnailUrl(url) {
+            if (!url) return "";
+            if (url.includes("cloudinary.com")) return url.replace("/upload/", "/upload/w_600,q_auto,f_auto/");
+            return url;
+        }
+
+        // --- FUNCIÓN DE COMPRESIÓN DE IMÁGENES ---
+        function compressImage(file) {
+            return new Promise((resolve, reject) => {
+                const maxWidth = 1920; 
+                const maxHeight = 1920; 
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > maxWidth) {
+                                height *= maxWidth / width;
+                                width = maxWidth;
+                            }
+                        } else {
+                            if (height > maxHeight) {
+                                width *= maxHeight / height;
+                                height = maxHeight;
+                            }
+                        }
+
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        canvas.toBlob((blob) => {
+                            if (!blob) {
+                                reject(new Error("Error al comprimir la imagen"));
+                                return;
+                            }
+                            resolve(new File([blob], file.name, {
+                                type: 'image/jpeg',
+                                lastModified: Date.now()
+                            }));
+                        }, 'image/jpeg', 0.8);
+                    };
+                    img.onerror = (error) => reject(error);
+                };
+                reader.onerror = (error) => reject(error);
+            });
+        }
+
+        // --- LÓGICA DE SUBIDA ---
+        window.handleUpload = async function(files) {
+            if (!files.length) return;
+            
+            const statusContainer = document.getElementById('upload-status-container');
+            const progressBar = document.getElementById('upload-progress-bar');
+            const statusText = document.getElementById('upload-status-text');
+            
+            statusContainer.classList.remove('hidden');
+            let uploadedCount = 0;
+            const totalFiles = files.length;
+
+            for (let i = 0; i < totalFiles; i++) {
+                let file = files[i];
+                statusText.innerText = `Procesando ${i + 1} de ${totalFiles}...`;
+                
+                try {
+                    if (file.size > 2 * 1024 * 1024) { 
+                        statusText.innerText = `Optimizando tamaño ${i + 1} de ${totalFiles}...`;
+                        try {
+                            file = await compressImage(file);
+                        } catch (compError) {
+                            console.warn("Fallo compresión, intentando subir original...", compError);
+                        }
+                    }
+
+                    statusText.innerText = `Subiendo a la nube ${i + 1} de ${totalFiles}...`;
+
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('upload_preset', UPLOAD_PRESET);
+                    
+                    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if(!res.ok) {
+                        const errorData = await res.json();
+                        throw new Error(errorData.error.message || "Error en Cloudinary");
+                    }
+                    const data = await res.json();
+                    
+                    await addDoc(collection(db, SESSION_COLLECTION), {
+                        url: data.secure_url,
+                        createdAt: serverTimestamp()
+                    });
+
+                    uploadedCount++;
+                    progressBar.style.width = `${(uploadedCount / totalFiles) * 100}%`;
+
+                } catch (err) {
+                    console.error("Error subiendo:", err);
+                    statusText.innerText = `Error: ${err.message}. Revisa la consola.`;
+                }
+            }
+
+            if(uploadedCount === totalFiles) {
+                statusText.innerText = "¡Carga completada!";
+                setTimeout(() => {
+                    statusContainer.classList.add('hidden');
+                    progressBar.style.width = '0%';
+                }, 3000);
+            } else {
+                statusText.innerText = "Proceso finalizado con algunos errores.";
+            }
+        };
+
+        // --- FUNCIÓN DE ELIMINAR ---
+        window.deletePhoto = async (event, id, collectionName) => {
+             event.stopPropagation(); // Detener lightbox
+             if(!confirm("¿ESTÁS SEGURO CADETE? Esta acción eliminará la foto permanentemente.")) return;
+             
+             // Feedback visual en el botón
+             const btn = event.currentTarget;
+             const originalContent = btn.innerHTML;
+             btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>';
+             lucide.createIcons();
+
+             try {
+                await deleteDoc(doc(db, collectionName, id));
+             } catch (e) {
+                alert("Error al eliminar: " + e.message);
+                btn.innerHTML = originalContent; // Restaurar si falla
+                lucide.createIcons();
+             }
+        };
+
+        function initGallery(collectionName, elementId, emptyMsg) {
+            const q = query(collection(db, collectionName));
+            
+            onSnapshot(q, (snapshot) => {
+                const grid = document.getElementById(elementId);
+                if(!grid) return;
+
+                if(snapshot.empty) {
+                    grid.innerHTML = `<div class="text-center w-full py-10 text-gray-500 font-space text-xs col-span-full">${emptyMsg}</div>`;
+                    return;
+                }
+                
+                grid.innerHTML = "";
+                let photos = [];
+                // Guardamos ID también
+                snapshot.forEach((docSnap) => {
+                    photos.push({ id: docSnap.id, ...docSnap.data() });
+                });
+
+                // Mezclar fotos
+                photos.sort(() => Math.random() - 0.5);
+
+                const deleteBtnClass = window.isAdmin ? '' : 'hidden';
+
+                photos.forEach((photo) => {
+                    const thumbUrl = getThumbnailUrl(photo.url);
+                    const hdUrl = photo.url;
+                    
+                    const div = document.createElement("div");
+                    div.className = `gallery-item group relative`;
+                    div.innerHTML = `
+                        <button onclick="window.deletePhoto(event, '${photo.id}', '${collectionName}')" 
+                                class="delete-btn ${deleteBtnClass} absolute top-2 right-2 bg-red-600 text-white p-2 rounded-full z-50 hover:bg-red-700 shadow-lg border border-white/20 transition-all hover:scale-110 cursor-pointer" 
+                                title="Eliminar Foto">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                        <div onclick="window.openLightbox('${hdUrl}')" class="cursor-pointer">
+                            <img src="${thumbUrl}" class="gallery-img pointer-events-none" loading="lazy" alt="Recuerdo" 
+                                 onerror="this.parentElement.parentElement.innerHTML='<div class=\'p-4 bg-red-900/50 text-red-200 text-xs text-center h-32 flex flex-col items-center justify-center\'><i data-lucide=\'alert-triangle\' class=\'mb-1\'></i>Error</div>'">
+                        </div>
+                    `;
+                    grid.appendChild(div);
+                });
+                lucide.createIcons();
+            });
+        }
+    </script>
+
+    <!-- SCRIPT ESTÁNDAR (UI) -->
+    <script>
+        window.openLightbox = (url) => {
+            document.getElementById('lightbox-img').src = url;
+            document.getElementById('lightbox').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closeLightbox = () => {
+            document.getElementById('lightbox').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            setTimeout(() => document.getElementById('lightbox-img').src = "", 300);
+        };
+
+        lucide.createIcons();
+        const starsContainer = document.getElementById('stars-container');
+        for (let i = 0; i < 50; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            const duration = Math.random() * (1.5 - 0.5) + 0.5;
+            const size = Math.random() * (3 - 1) + 1;
+            star.style.width = `${size}px`; star.style.height = `${size}px`;
+            star.style.setProperty('--duration', `${duration}s`);
+            starsContainer.appendChild(star);
+        }
+
+        function openReport() {
+            const intro = document.getElementById('intro-screen');
+            const main = document.getElementById('main-content');
+            const audio = document.getElementById('bg-music');
+            audio.play().catch(e => console.log("Audio autoplay require click"));
+            intro.style.opacity = '0';
+            intro.style.transform = 'scale(1.5)';
+            setTimeout(() => {
+                intro.style.display = 'none';
+                main.style.display = 'block';
+                void main.offsetWidth;
+                main.style.opacity = '1';
+                launchConfetti();
+            }, 500);
+        }
+
+        function toggleMusic() {
+            const audio = document.getElementById('bg-music');
+            const icon = document.getElementById('music-icon');
+            if (audio.paused) { audio.play(); icon.setAttribute('data-lucide', 'volume-2'); }
+            else { audio.pause(); icon.setAttribute('data-lucide', 'volume-x'); }
+            lucide.createIcons();
+        }
+
+        function launchConfetti() {
+            var duration = 3000; var end = Date.now() + duration;
+            var interval = setInterval(function() {
+                if (Date.now() > end) return clearInterval(interval);
+                confetti({ particleCount: 50, spread: 360, origin: { x: Math.random(), y: Math.random() - 0.2 }, colors: ['#74c045', '#6b3fa0', '#ffffff'] });
+            }, 250);
+        }
+
+        // LOGICA PANEL Y LOGIN
+        window.showLogin = function() {
+            document.getElementById('login-modal').classList.remove('hidden');
+            document.getElementById('admin-pass').value = '';
+            document.getElementById('login-error').classList.add('hidden');
+            setTimeout(() => document.getElementById('admin-pass').focus(), 100);
+        };
+
+        window.closeLogin = function() {
+            document.getElementById('login-modal').classList.add('hidden');
+        };
+
+        window.checkLogin = function() {
+            const pass = document.getElementById('admin-pass').value;
+            const container = document.querySelector('#login-modal > div');
+            if(pass.toLowerCase() === 'buzz') {
+                window.closeLogin();
+                document.getElementById('admin-panel').classList.remove('hidden');
+                
+                // === NUEVO: MOSTRAR BOTÓN DE UPLOAD SI ES ADMIN ===
+                const uploadContainer = document.getElementById('upload-container');
+                if(uploadContainer) uploadContainer.classList.remove('hidden');
+
+                // === NUEVO: ACTIVAR MODO ADMIN Y MOSTRAR BOTONES DE BORRAR ===
+                window.isAdmin = true;
+                document.querySelectorAll('.delete-btn').forEach(btn => btn.classList.remove('hidden'));
+                
+                renderGuestList();
+                window.updatePreview();
+            } else {
+                const error = document.getElementById('login-error');
+                error.classList.remove('hidden');
+                container.classList.remove('shake');
+                void container.offsetWidth; 
+                container.classList.add('shake');
+            }
+        };
+
+        document.getElementById('admin-pass').addEventListener('keypress', function(e) {
+            if(e.key === 'Enter') window.checkLogin();
+        });
+
+        window.closeAdminPanel = function() {
+            document.getElementById('admin-panel').classList.add('hidden');
+            // Opcional: Desactivar modo admin al cerrar panel si se desea seguridad estricta, 
+            // pero mejor dejarlo activo para borrar fotos cómodamente.
+        };
+
+        const URL_SITIO = window.location.href;
+
+        function getMessage(name) {
+            return `¡Hola ${name}! 🚀\n\nGracias por acompañar al Cadete Rodrigo en su primera misión. ¡Fue increíble tenerte ahí!\n\nPuedes ver las fotos de la misión aquí:\n${URL_SITIO}\n\n¡Al infinito y más allá! ⭐`;
+        }
+
+        window.updatePreview = function() {
+            const name = document.getElementById('guestName').value || "[Nombre]";
+            const text = getMessage(name);
+            document.getElementById('previewText').innerHTML = text.replace(/\n/g, "<br>");
+        };
+
+        window.sendWhatsapp = function() {
+            const name = document.getElementById('guestName').value.trim();
+            const phone = document.getElementById('guestPhone').value.trim();
+            if(!name || !phone) { alert("Faltan datos del cadete."); return; }
+            const message = getMessage(name);
+            const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+            addToHistory(name, phone);
+            window.open(url, '_blank');
+        };
+
+        function getHistory() { return JSON.parse(localStorage.getItem('buzz_guests') || '[]'); }
+
+        function addToHistory(name, phone) {
+            const list = getHistory();
+            list.unshift({ name, phone, date: new Date().toLocaleDateString() });
+            localStorage.setItem('buzz_guests', JSON.stringify(list));
+            renderGuestList();
+            document.getElementById('guestName').value = '';
+            document.getElementById('guestPhone').value = '';
+            window.updatePreview();
+        }
+
+        window.deleteGuest = function(index) {
+            const list = getHistory();
+            if(confirm("¿Eliminar registro de la bitácora?")) {
+                list.splice(index, 1);
+                localStorage.setItem('buzz_guests', JSON.stringify(list));
+                renderGuestList();
+            }
+        };
+
+        window.resendGuest = function(index) {
+            const list = getHistory();
+            const guest = list[index];
+            document.getElementById('guestName').value = guest.name;
+            document.getElementById('guestPhone').value = guest.phone;
+            window.updatePreview();
+        };
+
+        function renderGuestList() {
+            const list = getHistory();
+            const ul = document.getElementById('guestList');
+            ul.innerHTML = '';
+            if(list.length === 0) {
+                ul.innerHTML = '<li class="text-gray-500 text-center text-xs py-4 font-space">SIN REGISTROS EN BITÁCORA</li>';
+                return;
+            }
+            list.forEach((guest, index) => {
+                const li = document.createElement('li');
+                li.className = "bg-slate-700/50 p-3 rounded border border-gray-600 flex justify-between items-center group hover:border-green-500 transition-colors";
+                li.innerHTML = `
+                    <div><p class="text-green-300 font-bold text-sm">${guest.name}</p><p class="text-gray-400 text-xs font-mono">${guest.phone}</p></div>
+                    <div class="flex gap-2 opacity-100 lg:opacity-50 group-hover:opacity-100 transition-opacity">
+                        <button onclick="window.resendGuest(${index})" title="Cargar Datos" class="p-1.5 bg-blue-600 rounded hover:bg-blue-500 text-white"><i data-lucide="refresh-cw" class="w-3 h-3"></i></button>
+                        <button onclick="window.deleteGuest(${index})" title="Eliminar" class="p-1.5 bg-red-600 rounded hover:bg-red-500 text-white"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                    </div>`;
+                ul.appendChild(li);
+            });
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>
